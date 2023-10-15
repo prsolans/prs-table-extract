@@ -13,7 +13,14 @@
     "codespaces": {
       "openFiles": [
         "table_extraction/templates/index.html"
-      ]
+      ],
+      "repositories": {
+        "prsolans/table-extraction": {
+          "permissions": {
+            "issues": "write-all"
+          }
+        }
+      }
     },
     "vscode": {
       "extensions": [
