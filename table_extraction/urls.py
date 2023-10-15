@@ -1,4 +1,4 @@
-"""hello_world URL Configuration
+"""table_extraction URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -16,10 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from hello_world.core import views as core_views
+from . import views as core_views
 
 urlpatterns = [
     path("", core_views.index),
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
+    path('upload/', core_views.upload_doc, name='upload_doc'),
+    path('results/', core_views.upload_doc, name='upload_doc'),
+    path('extract-tables/', core_views.table_extraction_api, name='table_extraction_api')
 ]

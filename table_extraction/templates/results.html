@@ -1,0 +1,23 @@
+{% load django_browser_reload %}
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+</head>
+
+<body>
+    <div class="App">
+      data type: {{type}}
+        <h1>Data Table</h1>
+            {{ data_table }}
+        <h1>Data Table</h1>
+            {{ data_table2 }}
+        </form>
+    </div>
+</body>
+
+</html>
