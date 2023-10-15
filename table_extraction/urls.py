@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from .views import DocumentAPI
 
 from . import views as core_views
 
@@ -24,5 +25,6 @@ urlpatterns = [
     path("__reload__/", include("django_browser_reload.urls")),
     path('upload/', core_views.upload_doc, name='upload_doc'),
     path('results/', core_views.upload_doc, name='upload_doc'),
-    path('extract-tables/', core_views.table_extraction_api, name='table_extraction_api')
+    path('extract-tables/', core_views.table_extraction_api, name='table_extraction_api'),
+    path('api/upload/', DocumentAPI.as_view(), name='api_upload')
 ]

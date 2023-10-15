@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 from table_extraction.forms import DocumentForm
 from django.http import HttpResponse
 from docx import Document
+from .models import Document
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import TableDataSerializer
+from rest_framework import generics
+from .serializers import TableDataSerializer, DocumentSerializer
 import json
 
 
@@ -70,3 +72,13 @@ def table_extraction_api(request):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=400)
+
+class DocumentAPI(generics.CreateAPIView):
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        doc = parse_word_document(instance.upload.path)
+        tables_data = extract_table_data(doc)
+        # Process the tables_data or add to the model as needed

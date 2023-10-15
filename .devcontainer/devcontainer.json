@@ -15,7 +15,7 @@
         "table_extraction/templates/index.html"
       ],
       "repositories": {
-        "prsolans/table-extraction": {
+        "prsolans/prs-table-extract": {
           "permissions": {
             "issues": "write-all"
           }
