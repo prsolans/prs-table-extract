@@ -1,4 +1,6 @@
+""" views.py """
 import json
+import uuid
 from django.shortcuts import render
 from docx import Document as DocxDocument
 from rest_framework.decorators import api_view
@@ -84,3 +86,19 @@ class DocumentAPI(generics.CreateAPIView):
         tables_data = extract_table_data(doc)
         # Return the parsed tables_data as a response
         return Response(tables_data, status=status.HTTP_201_CREATED)
+
+class GuidAPI(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        received_guid = request.data.get('guid', None)
+        if not received_guid:
+            return Response({'detail': 'GUID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            valid_uuid = uuid.UUID(received_guid, version=4)
+        except ValueError:
+            # If it's a value error, then the string is not a valid hex code for a UUID
+            return Response({'detail': 'Invalid GUID provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Now you have a valid UUID in the variable `valid_uuid` and can process it as needed
+        # For now, let's just return it in the response.
+        return Response({'received_guid': str(valid_uuid)}, status=status.HTTP_200_OK)
