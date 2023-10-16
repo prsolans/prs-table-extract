@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.authtoken.views import obtain_auth_token
 from .views import DocumentAPI
-
 from . import views as core_views
 
 urlpatterns = [
@@ -26,5 +26,6 @@ urlpatterns = [
     path('upload/', core_views.upload_doc, name='upload_doc'),
     path('results/', core_views.upload_doc, name='upload_doc'),
     path('extract-tables/', core_views.table_extraction_api, name='table_extraction_api'),
-    path('api/upload/', DocumentAPI.as_view(), name='api_upload')
+    path('api/upload/', DocumentAPI.as_view(), name='api_upload'),
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth')
 ]

@@ -1,14 +1,14 @@
+import json
 from django.shortcuts import render, redirect
-from table_extraction.forms import DocumentForm
-from django.http import HttpResponse
-from docx import Document
-from .models import Document
+from docx import Document as DocxDocument
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework.authtoken.models import Token
+from rest_framework import generics, status
+from table_extraction.forms import DocumentForm
+from django.http import HttpResponse
+from .models import Document
 from .serializers import TableDataSerializer, DocumentSerializer
-import json
-
 
 def index(request):
     context = {
@@ -18,7 +18,7 @@ def index(request):
 
 
 def parse_word_document(file_path):
-    doc = Document(file_path)
+    doc = DocxDocument(file_path)
     return doc
 
 def extract_table_data(doc):
@@ -36,12 +36,16 @@ def extract_table_data(doc):
     return tables_data
 
 def upload_doc(request):
-    print(request)
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
+        print("?????????????????")
+        print(form.is_valid())
+        print("?????????????????")
         if form.is_valid():
             instance = form.save()  # Save the uploaded file instance
-            doc = parse_word_document(instance.upload.path)
+            doc = DocxDocument(instance.upload.path)
+            print(f"Number of paragraphs: {len(doc.paragraphs)}")
+        
             tables_data = extract_table_data(doc)
 
             json_string_1 = json.dumps(tables_data[0], indent=4)
@@ -72,13 +76,21 @@ def table_extraction_api(request):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=400)
-
+    
 class DocumentAPI(generics.CreateAPIView):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        # This uses the default creation logic provided by DRF
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # Once validated, save the object and parse the document
         instance = serializer.save()
         doc = parse_word_document(instance.upload.path)
         tables_data = extract_table_data(doc)
-        # Process the tables_data or add to the model as needed
+        
+        # Return the parsed tables_data as a response
+        return Response(tables_data, status=status.HTTP_201_CREATED)
+
